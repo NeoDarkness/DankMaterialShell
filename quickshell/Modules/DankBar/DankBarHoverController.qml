@@ -608,7 +608,7 @@ Item {
     function closeHoverSurfaces() {
         _closeHoverNotepad();
         activeHoverTrigger = "";
-        PopoutManager.closePopoutForScreen(barWindow?.screen);
+        PopoutManager.dismissHoverPopoutForScreen(barWindow?.screen);
         TrayMenuManager.closeAllMenus();
     }
 

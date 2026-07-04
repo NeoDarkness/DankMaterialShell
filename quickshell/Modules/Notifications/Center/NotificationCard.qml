@@ -30,6 +30,7 @@ Rectangle {
     property real swipingNotificationOffset: 0
     property real listLevelAdjacentScaleInfluence: 1.0
     property bool listLevelScaleAnimationsEnabled: true
+    property var transientSurfaceTracker: null
 
     readonly property bool compactMode: SettingsData.notificationCompactMode
     readonly property real cardPadding: compactMode ? Theme.notificationCardPaddingCompact : Theme.notificationCardPadding
@@ -61,6 +62,20 @@ Rectangle {
             if (root)
                 root.__initialized = true;
         });
+    }
+
+    Component.onDestruction: {
+        transientSurfaceTracker?.unregister(root);
+        notificationCardContextMenu.close();
+    }
+
+    Connections {
+        target: root.transientSurfaceTracker
+        ignoreUnknownSignals: true
+
+        function onCloseRequested() {
+            notificationCardContextMenu.close();
+        }
     }
 
     function expansionMotionDuration() {
@@ -1058,6 +1073,8 @@ Rectangle {
         id: notificationCardContextMenu
         width: 220
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        onVisibleChanged: root.transientSurfaceTracker?.setActive(root, visible, null)
 
         background: Rectangle {
             color: BlurService.enabled ? Theme.surfaceContainer : Theme.withAlpha(Theme.surfaceContainer, Theme.popupTransparency)

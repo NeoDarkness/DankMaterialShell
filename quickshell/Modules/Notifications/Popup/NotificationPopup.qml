@@ -70,6 +70,11 @@ PanelWindow {
     property real _storedTopMargin: 0
     property real _storedBottomMargin: 0
     property bool _inlineGeometryReady: false
+    readonly property bool contextMenuActive: transientSurfaces.active
+
+    TransientSurfaceTracker {
+        id: transientSurfaces
+    }
     readonly property bool directionalEffect: Theme.isDirectionalEffect
     readonly property bool depthEffect: Theme.isDepthEffect
     readonly property real entryTravel: {
@@ -122,6 +127,7 @@ PanelWindow {
         if (exiting || _isDestroying) {
             return;
         }
+        closeTransientUi();
         exiting = true;
         exitStarted();
         popupChromeGeometryChanged();
@@ -135,6 +141,7 @@ PanelWindow {
         if (_isDestroying) {
             return;
         }
+        closeTransientUi();
         _isDestroying = true;
         exiting = true;
         visible = false;
@@ -147,12 +154,18 @@ PanelWindow {
             return;
         }
 
+        closeTransientUi();
         _finalized = true;
         _isDestroying = true;
         exitWatchdog.stop();
         wrapperConn.enabled = false;
         wrapperConn.target = null;
         win.exitFinished();
+    }
+
+    function closeTransientUi() {
+        transientSurfaces.closeAll();
+        popupContextMenuLoader.active = false;
     }
 
     visible: !_finalized
@@ -274,6 +287,7 @@ PanelWindow {
     }
     onNotificationDataChanged: {
         if (!_isDestroying) {
+            closeTransientUi();
             if (SettingsData.notificationPopupPrivacyMode)
                 descriptionExpanded = false;
             wrapperConn.target = win.notificationData || null;
@@ -286,6 +300,7 @@ PanelWindow {
         }
     }
     Component.onDestruction: {
+        closeTransientUi();
         _isDestroying = true;
         exitWatchdog.stop();
         if (notificationData && notificationData.timer) {
@@ -716,7 +731,7 @@ PanelWindow {
                     if (cardHoverHandler.hovered) {
                         if (notificationData.timer)
                             notificationData.timer.stop();
-                    } else if (notificationData.popup && notificationData.timer) {
+                    } else if (!win.contextMenuActive && notificationData.popup && notificationData.timer) {
                         notificationData.timer.restart();
                     }
                 }
@@ -1357,8 +1372,23 @@ PanelWindow {
         interval: 160
         repeat: false
         onTriggered: {
-            if (notificationData && notificationData.timer && !exiting && !_isDestroying)
+            if (notificationData && notificationData.timer && !contextMenuActive && !exiting && !_isDestroying)
                 notificationData.timer.start();
+        }
+    }
+
+    Connections {
+        target: popupContextMenuLoader.item
+        ignoreUnknownSignals: true
+
+        function onVisibleChanged() {
+            if (!notificationData?.timer || exiting || _isDestroying)
+                return;
+            if (win.contextMenuActive) {
+                notificationData.timer.stop();
+            } else if (!cardHoverHandler.hovered && notificationData.popup) {
+                notificationData.timer.restart();
+            }
         }
     }
 
@@ -1387,6 +1417,7 @@ PanelWindow {
         active: false
 
         sourceComponent: NotificationContextMenu {
+            transientSurfaceTracker: transientSurfaces
             appName: notificationData?.appName ?? ""
             desktopEntry: notificationData?.desktopEntry ?? ""
             onMuted: {

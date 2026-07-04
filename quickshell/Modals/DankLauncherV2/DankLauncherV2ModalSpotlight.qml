@@ -26,6 +26,10 @@ Item {
     property string _pendingMode: ""
 
     readonly property bool useHyprlandFocusGrab: CompositorService.useHyprlandFocusGrab
+
+    TransientSurfaceTracker {
+        id: transientSurfaces
+    }
     readonly property var effectiveScreen: launcherWindow.screen
     readonly property real screenWidth: effectiveScreen?.width ?? 1920
     readonly property real screenHeight: effectiveScreen?.height ?? 1080
@@ -228,9 +232,7 @@ Item {
 
     HyprlandFocusGrab {
         id: focusGrab
-        readonly property var contextMenuWindow: root.spotlightContent?.activeContextMenu?.contextWindow ?? null
-        readonly property bool contextMenuActive: root.spotlightContent?.activeContextMenu?.renderActive ?? false
-        windows: contextMenuActive && contextMenuWindow ? [launcherWindow, contextMenuWindow] : [launcherWindow]
+        windows: [launcherWindow].concat(transientSurfaces.focusWindows)
         active: root.useHyprlandFocusGrab && root.keyboardActive
         onCleared: {
             if (spotlightOpen)
@@ -482,6 +484,7 @@ Item {
                         sourceComponent: SpotlightLauncherContent {
                             focus: true
                             parentModal: root
+                            transientSurfaceTracker: transientSurfaces
                         }
 
                         onLoaded: {

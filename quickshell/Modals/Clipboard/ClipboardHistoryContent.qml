@@ -9,6 +9,7 @@ FocusScope {
 
     property var clearConfirmDialog: null
     property var surfaceHost: null
+    property var transientSurfaceTracker: null
 
     property string activeTab: "recents"
     property bool showKeyboardHints: false
@@ -198,6 +199,7 @@ FocusScope {
             id: historyContent
             anchors.fill: parent
             modal: root
+            transientSurfaceTracker: root.transientSurfaceTracker
         }
     }
 

@@ -8,6 +8,7 @@ Item {
     id: clipboardContent
 
     required property var modal
+    property var transientSurfaceTracker: null
 
     property alias searchField: searchField
     property alias clipboardListView: clipboardListView
@@ -66,7 +67,7 @@ Item {
         contextMenu.hide();
     }
 
-    readonly property bool contextMenuActive: contextMenu.openState
+    readonly property bool contextMenuActive: contextMenu.renderActive
 
     anchors.fill: parent
 
@@ -74,6 +75,7 @@ Item {
         id: contextMenu
         modal: clipboardContent.modal
         parentHandler: clipboardContent
+        transientSurfaceTracker: clipboardContent.transientSurfaceTracker
     }
 
     Column {
