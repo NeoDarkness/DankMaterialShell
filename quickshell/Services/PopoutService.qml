@@ -909,6 +909,7 @@ Singleton {
     property var notepadPopout: null
     property var notepadPopoutLoader: null
     property bool _notepadPopoutWantsOpen: false
+    property string _notepadPendingOpenFilePath: ""
 
     function openNotepadPopout() {
         closeNotepadSlideouts();
@@ -920,10 +921,27 @@ Singleton {
         }
     }
 
+    function openNotepadPopoutWithFile(path) {
+        closeNotepadSlideouts();
+        if (notepadPopout) {
+            notepadPopout.show();
+            notepadPopout.notepad?.openExternalFile(path);
+        } else if (notepadPopoutLoader) {
+            _notepadPendingOpenFilePath = path;
+            _notepadPopoutWantsOpen = true;
+            notepadPopoutLoader.active = true;
+        }
+    }
+
     function _onNotepadPopoutLoaded() {
         if (_notepadPopoutWantsOpen && notepadPopout) {
             _notepadPopoutWantsOpen = false;
             notepadPopout.show();
+            if (_notepadPendingOpenFilePath) {
+                const pendingPath = _notepadPendingOpenFilePath;
+                _notepadPendingOpenFilePath = "";
+                notepadPopout.notepad?.openExternalFile(pendingPath);
+            }
         }
     }
 

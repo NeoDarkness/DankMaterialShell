@@ -385,6 +385,22 @@ Item {
             return "NOTEPAD_OPEN_FAILED";
         }
 
+        function openFile(path: string): string {
+            if (!path)
+                return open();
+            if (SettingsData.notepadDefaultMode === "popout") {
+                PopoutService.openNotepadPopoutWithFile(path);
+                return "NOTEPAD_OPEN_FILE_SUCCESS";
+            }
+            var instance = getActiveNotepadInstance();
+            if (instance) {
+                instance.show();
+                instance.loadedItem?.openExternalFile(path);
+                return "NOTEPAD_OPEN_FILE_SUCCESS";
+            }
+            return "NOTEPAD_OPEN_FILE_FAILED";
+        }
+
         function close(): string {
             if (SettingsData.notepadDefaultMode === "popout") {
                 PopoutService.notepadPopout?.hide();

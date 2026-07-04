@@ -248,6 +248,29 @@ Singleton {
         return newTab
     }
 
+    function createTabForFile(path) {
+        var id = Date.now()
+        var fileName = path.split('/').pop()
+
+        var newTab = {
+            id: id,
+            title: fileName,
+            filePath: path,
+            isTemporary: false,
+            lastModified: new Date().toISOString(),
+            cursorPosition: 0,
+            scrollPosition: 0
+        }
+
+        var newTabs = tabs.slice()
+        newTabs.push(newTab)
+        tabs = newTabs
+        currentTabIndex = tabs.length - 1
+        saveMetadata()
+
+        return newTab
+    }
+
     function closeTab(tabIndex) {
         if (tabIndex < 0 || tabIndex >= tabs.length) return
 
