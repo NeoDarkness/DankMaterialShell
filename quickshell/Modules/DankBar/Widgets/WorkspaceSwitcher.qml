@@ -182,7 +182,7 @@ Item {
         function mapWorkspace(ws) {
             return {
                 "num": ws.number,
-                "name": ws.name,
+                "name": stripSwayWorkspaceNumber(ws.number, ws.name),
                 "focused": ws.focused,
                 "active": ws.active,
                 "urgent": ws.urgent,
@@ -200,6 +200,18 @@ Item {
                 "num": 1
             }
         ];
+    }
+
+    // sway/scroll fold `<num>:<name>` into the name field (num 1 → name "1:test"); drop the redundant prefix so the index option controls it
+    function stripSwayWorkspaceNumber(num, name) {
+        if (num === undefined || num === -1)
+            return name;
+        if (typeof name !== "string")
+            return name;
+        const prefix = num + ":";
+        if (!name.startsWith(prefix))
+            return name;
+        return name.slice(prefix.length);
     }
 
     // Numbered workspaces first in ascending order; purely-named workspaces (sway reports num -1) after, by name
