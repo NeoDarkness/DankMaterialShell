@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Effects
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
 import Quickshell.Wayland
 import Quickshell.Widgets
@@ -1048,12 +1047,9 @@ BasePill {
         WlrLayershell.namespace: "dms:tray-overflow-menu"
         color: "transparent"
 
-        HyprlandFocusGrab {
+        DankFocusGrab {
             windows: [overflowMenu].concat(KeyboardFocus.barWindows)
-            active: root.useOverflowPopup && KeyboardFocus.wantsGrab(root.menuOpen, null)
-
-            property var restoreToplevel: null
-            onActiveChanged: restoreToplevel = active ? KeyboardFocus.captureActiveToplevel() : KeyboardFocus.restoreToplevel(restoreToplevel)
+            wanted: root.useOverflowPopup && KeyboardFocus.wantsGrab(root.menuOpen, null)
         }
 
         Connections {
@@ -1601,12 +1597,9 @@ BasePill {
                 WlrLayershell.keyboardFocus: KeyboardFocus.keyboardFocus(menuRoot.showMenu, null)
                 color: "transparent"
 
-                HyprlandFocusGrab {
+                DankFocusGrab {
                     windows: [menuWindow].concat(KeyboardFocus.barWindows)
-                    active: KeyboardFocus.wantsGrab(menuRoot.showMenu, null)
-
-                    property var restoreToplevel: null
-                    onActiveChanged: restoreToplevel = active ? KeyboardFocus.captureActiveToplevel() : KeyboardFocus.restoreToplevel(restoreToplevel)
+                    wanted: KeyboardFocus.wantsGrab(menuRoot.showMenu, null)
                 }
 
                 anchors {

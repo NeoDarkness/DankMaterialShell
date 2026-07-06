@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell.Hyprland
 import qs.Common
 import qs.Services
 import qs.Widgets
@@ -61,12 +60,9 @@ Item {
     }
 
     // Hyprland OnDemand grab delivers keyboard focus to the modal content surface.
-    HyprlandFocusGrab {
+    DankFocusGrab {
         windows: (root.contentWindow ? [root.contentWindow] : []).concat(root.transientSurfaceTracker?.focusWindows ?? [])
-        active: KeyboardFocus.wantsGrab(root.shouldHaveFocus, root.customKeyboardFocus)
-
-        property var restoreToplevel: null
-        onActiveChanged: restoreToplevel = active ? KeyboardFocus.captureActiveToplevel() : KeyboardFocus.restoreToplevel(restoreToplevel)
+        wanted: KeyboardFocus.wantsGrab(root.shouldHaveFocus, root.customKeyboardFocus)
     }
     readonly property var contentWindow: impl.item ? impl.item.contentWindow : null
     readonly property var effectiveScreen: impl.item ? impl.item.effectiveScreen : null

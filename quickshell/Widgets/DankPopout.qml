@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell.Hyprland
 import qs.Common
 import qs.Services
 
@@ -62,7 +61,7 @@ Item {
     }
 
     // Hyprland OnDemand grab: whitelist popout surfaces and bars so dismiss clicks still land.
-    HyprlandFocusGrab {
+    DankFocusGrab {
         windows: {
             const list = [];
             if (root.contentWindow)
@@ -72,10 +71,7 @@ Item {
             const transientWindows = root.transientSurfaceTracker?.focusWindows ?? [];
             return list.concat(transientWindows).concat(KeyboardFocus.barWindows);
         }
-        active: KeyboardFocus.wantsGrab(root.shouldBeVisible, root.customKeyboardFocus)
-
-        property var restoreToplevel: null
-        onActiveChanged: restoreToplevel = active ? KeyboardFocus.captureActiveToplevel() : KeyboardFocus.restoreToplevel(restoreToplevel)
+        wanted: KeyboardFocus.wantsGrab(root.shouldBeVisible, root.customKeyboardFocus)
     }
 
     Loader {
