@@ -152,7 +152,8 @@ Item {
         property real energy: 0
         property vector4d bandsA: Qt.vector4d(0, 0, 0, 0)
         property vector2d bandsB: Qt.vector2d(0, 0)
-        property vector4d fillColor: Qt.vector4d(Theme.primary.r, Theme.primary.g, Theme.primary.b, Theme.primary.a)
+        readonly property color accentColor: MediaAccentService.accent
+        property vector4d fillColor: Qt.vector4d(accentColor.r, accentColor.g, accentColor.b, accentColor.a)
 
         Behavior on activation {
             NumberAnimation {
@@ -173,7 +174,7 @@ Item {
 
         imageSource: artUrl || lastValidArtUrl || ""
         fallbackIcon: "album"
-        border.color: Theme.primary
+        border.color: MediaAccentService.accent
         border.width: 2
 
         onImageSourceChanged: {

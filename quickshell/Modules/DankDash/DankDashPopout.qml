@@ -240,8 +240,10 @@ DankPopout {
             Connections {
                 target: root
                 function onShouldBeVisibleChanged() {
-                    if (root.shouldBeVisible)
-                        mainContainer.forceActiveFocus();
+                    if (!root.shouldBeVisible)
+                        return;
+                    mainContainer.forceActiveFocus();
+                    tabBar.snapIndicator();
                 }
             }
 

@@ -1,6 +1,6 @@
 import QtQuick
-import QtQuick.Effects
 import Quickshell
+import Quickshell.Widgets
 import qs.Common
 import qs.Modals.FileBrowser
 import qs.Services
@@ -75,28 +75,27 @@ Item {
                         radius: Theme.cornerRadius
                         color: Theme.surfaceVariant
 
-                        Image {
+                        ClippingRectangle {
                             anchors.fill: parent
                             anchors.margins: 1
-                            source: {
-                                var wp = root.currentWallpaper;
-                                if (wp === "" || wp.startsWith("#"))
-                                    return "";
-                                if (wp.startsWith("file://"))
-                                    wp = wp.substring(7);
-                                return "file://" + wp.split('/').map(s => encodeURIComponent(s)).join('/');
-                            }
-                            fillMode: Image.PreserveAspectCrop
-                            visible: root.currentWallpaper !== "" && !root.currentWallpaper.startsWith("#")
-                            sourceSize.width: 160
-                            sourceSize.height: 160
-                            asynchronous: true
-                            layer.enabled: true
-                            layer.effect: MultiEffect {
-                                maskEnabled: true
-                                maskSource: wallpaperMask
-                                maskThresholdMin: 0.5
-                                maskSpreadAtMin: 1
+                            radius: Theme.cornerRadius - 1
+                            color: "transparent"
+
+                            Image {
+                                anchors.fill: parent
+                                source: {
+                                    var wp = root.currentWallpaper;
+                                    if (wp === "" || wp.startsWith("#"))
+                                        return "";
+                                    if (wp.startsWith("file://"))
+                                        wp = wp.substring(7);
+                                    return "file://" + wp.split('/').map(s => encodeURIComponent(s)).join('/');
+                                }
+                                fillMode: Image.PreserveAspectCrop
+                                visible: root.currentWallpaper !== "" && !root.currentWallpaper.startsWith("#")
+                                sourceSize.width: 160
+                                sourceSize.height: 160
+                                asynchronous: true
                             }
                         }
 
@@ -106,16 +105,6 @@ Item {
                             radius: Theme.cornerRadius - 1
                             color: root.currentWallpaper.startsWith("#") ? root.currentWallpaper : "transparent"
                             visible: root.currentWallpaper !== "" && root.currentWallpaper.startsWith("#")
-                        }
-
-                        Rectangle {
-                            id: wallpaperMask
-                            anchors.fill: parent
-                            anchors.margins: 1
-                            radius: Theme.cornerRadius - 1
-                            color: "black"
-                            visible: false
-                            layer.enabled: true
                         }
 
                         DankIcon {
@@ -421,31 +410,30 @@ Item {
                                 radius: Theme.cornerRadius
                                 color: Theme.surfaceVariant
 
-                                Image {
+                                ClippingRectangle {
                                     anchors.fill: parent
                                     anchors.margins: 1
-                                    source: {
-                                        var wp = SessionData.wallpaperPathLight;
-                                        if (wp === "" || wp.startsWith("#"))
-                                            return "";
-                                        if (wp.startsWith("file://"))
-                                            wp = wp.substring(7);
-                                        return "file://" + wp.split('/').map(s => encodeURIComponent(s)).join('/');
-                                    }
-                                    fillMode: Image.PreserveAspectCrop
-                                    visible: {
-                                        var lightWallpaper = SessionData.wallpaperPathLight;
-                                        return lightWallpaper !== "" && !lightWallpaper.startsWith("#");
-                                    }
-                                    sourceSize.width: 160
-                                    sourceSize.height: 160
-                                    asynchronous: true
-                                    layer.enabled: true
-                                    layer.effect: MultiEffect {
-                                        maskEnabled: true
-                                        maskSource: lightMask
-                                        maskThresholdMin: 0.5
-                                        maskSpreadAtMin: 1
+                                    radius: Theme.cornerRadius - 1
+                                    color: "transparent"
+
+                                    Image {
+                                        anchors.fill: parent
+                                        source: {
+                                            var wp = SessionData.wallpaperPathLight;
+                                            if (wp === "" || wp.startsWith("#"))
+                                                return "";
+                                            if (wp.startsWith("file://"))
+                                                wp = wp.substring(7);
+                                            return "file://" + wp.split('/').map(s => encodeURIComponent(s)).join('/');
+                                        }
+                                        fillMode: Image.PreserveAspectCrop
+                                        visible: {
+                                            var lightWallpaper = SessionData.wallpaperPathLight;
+                                            return lightWallpaper !== "" && !lightWallpaper.startsWith("#");
+                                        }
+                                        sourceSize.width: 160
+                                        sourceSize.height: 160
+                                        asynchronous: true
                                     }
                                 }
 
@@ -461,16 +449,6 @@ Item {
                                         var lightWallpaper = SessionData.wallpaperPathLight;
                                         return lightWallpaper !== "" && lightWallpaper.startsWith("#");
                                     }
-                                }
-
-                                Rectangle {
-                                    id: lightMask
-                                    anchors.fill: parent
-                                    anchors.margins: 1
-                                    radius: Theme.cornerRadius - 1
-                                    color: "black"
-                                    visible: false
-                                    layer.enabled: true
                                 }
 
                                 DankIcon {
@@ -611,31 +589,30 @@ Item {
                                 radius: Theme.cornerRadius
                                 color: Theme.surfaceVariant
 
-                                Image {
+                                ClippingRectangle {
                                     anchors.fill: parent
                                     anchors.margins: 1
-                                    source: {
-                                        var wp = SessionData.wallpaperPathDark;
-                                        if (wp === "" || wp.startsWith("#"))
-                                            return "";
-                                        if (wp.startsWith("file://"))
-                                            wp = wp.substring(7);
-                                        return "file://" + wp.split('/').map(s => encodeURIComponent(s)).join('/');
-                                    }
-                                    fillMode: Image.PreserveAspectCrop
-                                    visible: {
-                                        var darkWallpaper = SessionData.wallpaperPathDark;
-                                        return darkWallpaper !== "" && !darkWallpaper.startsWith("#");
-                                    }
-                                    sourceSize.width: 160
-                                    sourceSize.height: 160
-                                    asynchronous: true
-                                    layer.enabled: true
-                                    layer.effect: MultiEffect {
-                                        maskEnabled: true
-                                        maskSource: darkMask
-                                        maskThresholdMin: 0.5
-                                        maskSpreadAtMin: 1
+                                    radius: Theme.cornerRadius - 1
+                                    color: "transparent"
+
+                                    Image {
+                                        anchors.fill: parent
+                                        source: {
+                                            var wp = SessionData.wallpaperPathDark;
+                                            if (wp === "" || wp.startsWith("#"))
+                                                return "";
+                                            if (wp.startsWith("file://"))
+                                                wp = wp.substring(7);
+                                            return "file://" + wp.split('/').map(s => encodeURIComponent(s)).join('/');
+                                        }
+                                        fillMode: Image.PreserveAspectCrop
+                                        visible: {
+                                            var darkWallpaper = SessionData.wallpaperPathDark;
+                                            return darkWallpaper !== "" && !darkWallpaper.startsWith("#");
+                                        }
+                                        sourceSize.width: 160
+                                        sourceSize.height: 160
+                                        asynchronous: true
                                     }
                                 }
 
@@ -651,16 +628,6 @@ Item {
                                         var darkWallpaper = SessionData.wallpaperPathDark;
                                         return darkWallpaper !== "" && darkWallpaper.startsWith("#");
                                     }
-                                }
-
-                                Rectangle {
-                                    id: darkMask
-                                    anchors.fill: parent
-                                    anchors.margins: 1
-                                    radius: Theme.cornerRadius - 1
-                                    color: "black"
-                                    visible: false
-                                    layer.enabled: true
                                 }
 
                                 DankIcon {

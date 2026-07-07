@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Window
-import QtQuick.Effects
+import Quickshell.Widgets
 import qs.Common
 import qs.Widgets
 
@@ -65,67 +65,44 @@ Rectangle {
     border.color: "transparent"
     border.width: 0
 
-    // Probes as AnimatedImage to read frameCount; retires once staticImage is ready.
-    AnimatedImage {
-        id: probe
+    ClippingRectangle {
         anchors.fill: parent
         anchors.margins: 2
-        asynchronous: true
-        fillMode: Image.PreserveAspectCrop
-        smooth: true
-        mipmap: true
-        cache: root.cacheImages
-        visible: false
-        source: root.shouldProbe && (root.isAnimated || staticImage.status !== Image.Ready) ? root.imageSource : ""
-    }
+        radius: Math.min(width, height) / 2
+        color: "transparent"
 
-    // Takes over once the probe settles on a non-animated image, then latches.
-    Image {
-        id: staticImage
-        anchors.fill: parent
-        anchors.margins: 2
-        asynchronous: true
-        fillMode: Image.PreserveAspectCrop
-        smooth: true
-        mipmap: true
-        cache: root.cacheImages
-        visible: false
-        sourceSize.width: Math.max(width * 2, 128)
-        sourceSize.height: Math.max(height * 2, 128)
-        source: {
-            if (!root.shouldProbe)
-                return root.imageSource;
-            if ((root.probeSettled && !root.isAnimated) || staticImage.status !== Image.Null)
-                return root.imageSource;
-            return "";
-        }
-    }
-
-    MultiEffect {
-        anchors.fill: parent
-        anchors.margins: 2
-        source: root.activeImage
-        maskEnabled: true
-        maskSource: circularMask
-        visible: root.activeImage.status === Image.Ready && root.imageSource !== ""
-        maskThresholdMin: 0.5
-        maskSpreadAtMin: 1
-    }
-
-    Item {
-        id: circularMask
-        anchors.centerIn: parent
-        width: parent.width - 4
-        height: parent.height - 4
-        layer.enabled: true
-        layer.smooth: true
-        visible: false
-
-        Rectangle {
+        // Probes as AnimatedImage to read frameCount; retires once staticImage is ready.
+        AnimatedImage {
+            id: probe
             anchors.fill: parent
-            radius: width / 2
-            color: "black"
-            antialiasing: true
+            asynchronous: true
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
+            mipmap: true
+            cache: root.cacheImages
+            visible: root.activeImage === probe && probe.status === Image.Ready && root.imageSource !== ""
+            source: root.shouldProbe && (root.isAnimated || staticImage.status !== Image.Ready) ? root.imageSource : ""
+        }
+
+        // Takes over once the probe settles on a non-animated image, then latches.
+        Image {
+            id: staticImage
+            anchors.fill: parent
+            asynchronous: true
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
+            mipmap: true
+            cache: root.cacheImages
+            visible: root.activeImage === staticImage && staticImage.status === Image.Ready && root.imageSource !== ""
+            sourceSize.width: Math.max(width * 2, 128)
+            sourceSize.height: Math.max(height * 2, 128)
+            source: {
+                if (!root.shouldProbe)
+                    return root.imageSource;
+                if ((root.probeSettled && !root.isAnimated) || staticImage.status !== Image.Null)
+                    return root.imageSource;
+                return "";
+            }
         }
     }
 

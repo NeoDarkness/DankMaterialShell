@@ -25,6 +25,11 @@ Item {
     property string section: ""
     property int barPosition: SettingsData.Position.Top
 
+    readonly property color accent: MediaAccentService.accent
+    readonly property color onAccent: MediaAccentService.onAccent
+    readonly property color accentHover: MediaAccentService.accentHover
+    readonly property color accentPressed: MediaAccentService.accentPressed
+
     signal showVolumeDropdown(point pos, var screen, bool rightEdge, var player, var players)
     signal showAudioDevicesDropdown(point pos, var screen, bool rightEdge)
     signal showPlayersDropdown(point pos, var screen, bool rightEdge, var player, var players)
@@ -298,8 +303,16 @@ Item {
         Component.onCompleted: syncArt()
 
         function syncArt() {
-            if (curArt === "" || layerA.art == curArt || layerB.art == curArt)
+            if (curArt === "")
                 return;
+            const frontArt = _showA ? layerA.art : layerB.art;
+            const backArt = _showA ? layerB.art : layerA.art;
+            if (frontArt == curArt)
+                return;
+            if (backArt == curArt) {
+                _showA = !_showA;
+                return;
+            }
             if (_showA)
                 layerB.art = curArt;
             else
@@ -564,13 +577,13 @@ Item {
                                 height: 40
                                 radius: 20
                                 anchors.centerIn: parent
-                                color: shuffleArea.containsMouse ? Theme.primaryHover : Theme.withAlpha(Theme.primaryHover, 0)
+                                color: shuffleArea.containsMouse ? root.accentHover : Theme.withAlpha(root.accent, 0)
 
                                 DankIcon {
                                     anchors.centerIn: parent
                                     name: "shuffle"
                                     size: 20
-                                    color: activePlayer && activePlayer.shuffle ? Theme.primary : Theme.surfaceText
+                                    color: activePlayer && activePlayer.shuffle ? root.accent : Theme.surfaceText
                                 }
 
                                 MouseArea {
@@ -626,13 +639,13 @@ Item {
                                 height: 50
                                 radius: 25
                                 anchors.centerIn: parent
-                                color: Theme.primary
+                                color: root.accent
 
                                 DankIcon {
                                     anchors.centerIn: parent
                                     name: activePlayer && activePlayer.playbackState === MprisPlaybackState.Playing ? "pause" : "play_arrow"
                                     size: 28
-                                    color: Theme.background
+                                    color: root.onAccent
                                     weight: 500
                                 }
 
@@ -696,7 +709,7 @@ Item {
                                 height: 40
                                 radius: 20
                                 anchors.centerIn: parent
-                                color: repeatArea.containsMouse ? Theme.primaryHover : Theme.withAlpha(Theme.primaryHover, 0)
+                                color: repeatArea.containsMouse ? root.accentHover : Theme.withAlpha(root.accent, 0)
 
                                 DankIcon {
                                     anchors.centerIn: parent
@@ -713,7 +726,7 @@ Item {
                                         }
                                     }
                                     size: 20
-                                    color: activePlayer && activePlayer.loopState !== MprisLoopState.None ? Theme.primary : Theme.surfaceText
+                                    color: activePlayer && activePlayer.loopState !== MprisLoopState.None ? root.accent : Theme.surfaceText
                                 }
 
                                 MouseArea {
@@ -752,7 +765,7 @@ Item {
         radius: 20
         x: isRightEdge ? Theme.spacingM : parent.width - 40 - Theme.spacingM
         y: 185
-        color: playerSelectorArea.containsMouse || playersExpanded ? Theme.primaryPressed : Theme.withAlpha(Theme.primaryPressed, 0)
+        color: playerSelectorArea.containsMouse || playersExpanded ? root.accentPressed : Theme.withAlpha(root.accentPressed, 0)
         border.color: Theme.outlineStrong
         border.width: 1
         z: 100
@@ -819,7 +832,7 @@ Item {
         radius: 20
         x: isRightEdge ? Theme.spacingM : parent.width - 40 - Theme.spacingM
         y: 130
-        color: volumeButtonArea.containsMouse && volumeAvailable || volumeExpanded ? Theme.primaryPressed : Theme.withAlpha(Theme.primaryPressed, 0)
+        color: volumeButtonArea.containsMouse && volumeAvailable || volumeExpanded ? root.accentPressed : Theme.withAlpha(root.accentPressed, 0)
         border.color: volumeAvailable ? Theme.outlineStrong : Theme.outlineMedium
         border.width: 1
         z: 101
@@ -831,7 +844,7 @@ Item {
             anchors.centerIn: parent
             name: getVolumeIcon()
             size: 18
-            color: volumeAvailable && currentVolume > 0 ? Theme.primary : Theme.withAlpha(Theme.surfaceText, volumeAvailable ? 1.0 : 0.5)
+            color: volumeAvailable && currentVolume > 0 ? root.accent : Theme.withAlpha(Theme.surfaceText, volumeAvailable ? 1.0 : 0.5)
         }
 
         MouseArea {
@@ -882,7 +895,7 @@ Item {
         radius: 20
         x: isRightEdge ? Theme.spacingM : parent.width - 40 - Theme.spacingM
         y: 240
-        color: audioDevicesArea.containsMouse || devicesExpanded ? Theme.primaryPressed : Theme.withAlpha(Theme.primaryPressed, 0)
+        color: audioDevicesArea.containsMouse || devicesExpanded ? root.accentPressed : Theme.withAlpha(root.accentPressed, 0)
         border.color: Theme.outlineStrong
         border.width: 1
         z: 100
